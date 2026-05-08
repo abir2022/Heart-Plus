@@ -8,6 +8,7 @@ import PatientConsultation from './pages/PatientConsultation';
 import Login from './pages/Login';
 import PatientPortal from './pages/PatientPortal';
 import Home from './pages/Home';
+import PrescriptionPrint from './pages/PrescriptionPrint';
 
 // Placeholder components for other routes
 const Placeholder = ({ title }) => (
@@ -34,6 +35,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
         <Route path="/patient-portal" element={<PatientPortal />} />
+        <Route path="/print/:id" element={<PrescriptionPrint />} />
         
         <Route path="/dashboard/*" element={
           user ? (

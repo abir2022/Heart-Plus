@@ -135,9 +135,19 @@ const PatientPortal = () => {
             </div>
 
             <div className="result-grid">
-              <div className="result-item">
-                <label>Patient Name</label>
-                <p>{report.patient_name}</p>
+              <div className="flex-between">
+                <div>
+                  <span className="badge-primary">OFFICIAL REPORT</span>
+                  <h1>{report.patient_name}'s Diagnosis</h1>
+                </div>
+                <button 
+                  className="btn-outline flex-center" 
+                  style={{ gap: '0.5rem' }}
+                  onClick={() => window.open(`/print/${report.id}`, '_blank')}
+                >
+                  <Printer size={18} />
+                  <span>Print PDF</span>
+                </button>
               </div>
               <div className="result-item">
                 <label>Risk Evaluation</label>

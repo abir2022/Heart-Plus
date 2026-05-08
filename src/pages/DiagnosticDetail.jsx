@@ -162,9 +162,9 @@ const DiagnosticDetail = () => {
            Report verified by automated diagnostic systems. Awaiting human signature.
         </p>
         <div className="footer-actions">
-          <button className="btn-outline" onClick={() => window.print()}>
+          <button className="btn-outline" onClick={() => window.open(`/print/${report.id}`, '_blank')}>
             <Printer size={18} />
-            <span>Print for Lab Records</span>
+            <span>Generate Official PDF</span>
           </button>
           <button className="btn-primary">
             <Send size={18} />
