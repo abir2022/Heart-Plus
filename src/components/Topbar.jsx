@@ -1,12 +1,9 @@
 import React from 'react';
-import { Search, Bell, Settings, User } from 'lucide-react';
+import { Search, Bell } from 'lucide-react';
 import './Topbar.css';
 
-const Topbar = () => {
+const Topbar = ({ user }) => {
   return (
-    <header className="topbar">
-      <div className="search-container">
-        <Search size={18} className="search-icon" />
     <header className="topbar card">
       <div className="search-bar">
         <Search size={18} />
