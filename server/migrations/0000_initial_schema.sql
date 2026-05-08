@@ -16,14 +16,14 @@ CREATE TABLE IF NOT EXISTS users (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Seed Users
+-- Seed Staff (Doctors & Lab Assistants)
 INSERT OR IGNORE INTO users (id, name, email, password, role, specialty) VALUES 
-('doc_1', 'Dr. Sarah Chen', 'sarah.chen@heartplus.com', 'doc123', 'doctor', 'Cardiologist'),
-('doc_2', 'Dr. James Wilson', 'james.wilson@heartplus.com', 'doc123', 'doctor', 'Cardiac Surgeon'),
-('doc_3', 'Dr. Elena Rodriguez', 'elena.r@heartplus.com', 'doc123', 'doctor', 'Emergency Physician'),
-('doc_4', 'Dr. Marcus Thorne', 'marcus.t@heartplus.com', 'doc123', 'doctor', 'Cardiologist'),
-('doc_5', 'Dr. Priya Sharma', 'priya.s@heartplus.com', 'doc123', 'doctor', 'Internal Medicine'),
-('lab_1', 'Alex Rivera', 'alex.rivera@heartplus.com', 'lab123', 'lab-assistant', 'Head Technician');
+('doc_1', 'Dr. Sarah Chen', 'sarah.chen@heartplus.com', 'admin123', 'doctor', 'Senior Cardiologist'),
+('doc_2', 'Dr. James Wilson', 'james.wilson@heartplus.com', 'doctor123', 'doctor', 'Cardiac Surgeon'),
+('doc_3', 'Dr. Maria Garcia', 'maria.garcia@heartplus.com', 'doctor123', 'doctor', 'Electrophysiologist'),
+('doc_4', 'Dr. Robert Lee', 'robert.lee@heartplus.com', 'doctor123', 'doctor', 'Pediatric Cardiologist'),
+('doc_5', 'Dr. Aisha Khan', 'aisha.khan@heartplus.com', 'doctor123', 'doctor', 'Cardiovascular Specialist'),
+('lab_1', 'Alex Rivera', 'lab@heartplus.com', 'lab123', 'lab-assistant', 'Senior ECG Technician');
 
 -- Patients Table
 CREATE TABLE IF NOT EXISTS patients (

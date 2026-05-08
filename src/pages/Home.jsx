@@ -14,6 +14,10 @@ const Home = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
+    if (!reportId && !mobile) {
+      alert("Please enter either a Report ID or your Mobile Number.");
+      return;
+    }
     navigate(`/patient-portal?reportId=${reportId}&mobile=${mobile}`);
   };
 
@@ -79,7 +83,6 @@ const Home = () => {
                   placeholder="e.g. report_abcd1234"
                   value={reportId}
                   onChange={(e) => setReportId(e.target.value)}
-                  required
                 />
               </div>
               <div className="input-field">
@@ -89,7 +92,6 @@ const Home = () => {
                   placeholder="e.g. 017xxxxxxxx"
                   value={mobile}
                   onChange={(e) => setMobile(e.target.value)}
-                  required
                 />
               </div>
             </div>

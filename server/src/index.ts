@@ -116,7 +116,7 @@ export default {
 				// 2. Upload to R2
 				const reportId = `report_${crypto.randomUUID().slice(0, 8)}`;
 				const fileKey = `${reportId}-${file.name}`;
-				await env.BUCKET.put(fileKey, file.stream());
+				await env.BUCKET.put(fileKey, await file.arrayBuffer());
 				const fileUrl = `${url.origin}/api/files/${fileKey}`;
 
 				// 3. Save to D1
@@ -135,22 +135,31 @@ export default {
 
 				if (GEMINI_API_KEY) {
 					try {
-						const prompt = `You are a professional Cardiac AI. Analyze this new ECG upload. 
-						Provide a diagnostic assumption for:
-						1. Heart Attack Probability (0-100).
-						2. Risk Level (LOW, MEDIUM, HIGH, CRITICAL).
-						3. Clinical observations.
-						4. Cardiac biomarkers (array of strings).
-						
-						IMPORTANT: Return ONLY valid JSON in this format: 
-						{"confidence": 75, "risk": "LOW", "observations": "...", "biomarkers": ["...", "..."]}
-						Do not include any other text.`;
+						const fileBuffer = await file.arrayBuffer();
+						const base64Data = btoa(String.fromCharCode(...new Uint8Array(fileBuffer)));
+						const mimeType = file.type || 'image/jpeg';
 
-						const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
+						const prompt = `You are an expert Cardiac AI Diagnostic Engine. Analyze this ECG scan carefully. 
+						Detect and report on:
+						1. Potential Heart Attack (Myocardial Infarction) probability (0-100).
+						2. Risk Level (LOW, MEDIUM, HIGH, CRITICAL).
+						3. Specific observations (e.g., ST-segment elevation, T-wave inversion, tachycardia).
+						4. Cardiac biomarkers/rhythm names (array of strings).
+						
+						IMPORTANT: Return ONLY a raw JSON object with this exact structure: 
+						{"confidence": 85, "risk": "HIGH", "observations": "...", "biomarkers": ["...", "..."]}
+						No markdown, no talk, just the JSON object.`;
+
+						const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
 							method: 'POST',
 							headers: { 'Content-Type': 'application/json' },
 							body: JSON.stringify({
-								contents: [{ parts: [{ text: prompt }] }]
+								contents: [{
+									parts: [
+										{ text: prompt },
+										{ inline_data: { mime_type: mimeType, data: base64Data } }
+									]
+								}]
 							})
 						});
 
@@ -167,7 +176,7 @@ export default {
 							const parsedAI = JSON.parse(aiText);
 							aiResult = {
 								confidence_score: Number(parsedAI.confidence) || 85,
-								risk_level: parsedAI.risk || "STABLE",
+								risk_level: (parsedAI.risk || "STABLE").toUpperCase(),
 								observations: parsedAI.observations || "Analysis complete.",
 								biomarkers: JSON.stringify(parsedAI.biomarkers || [])
 							};
@@ -220,6 +229,21 @@ export default {
 
 				if (!report) return new Response("Report not found", { status: 404, headers: corsHeaders });
 				return Response.json(report, { headers: corsHeaders });
+			}
+
+			// --- GET: Serve Files from R2 ---
+			if (pathname.startsWith("/api/files/") && request.method === "GET") {
+				const key = pathname.split("/").pop();
+				if (!key) return new Response("File not found", { status: 404, headers: corsHeaders });
+				
+				const object = await env.BUCKET.get(key);
+				if (!object) return new Response("File not found", { status: 404, headers: corsHeaders });
+
+				const headers = new Headers(corsHeaders);
+				object.writeHttpMetadata(headers);
+				headers.set("etag", object.httpEtag);
+				
+				return new Response(object.body, { headers });
 			}
 
 			return new Response("Not Found", { status: 404, headers: corsHeaders });
