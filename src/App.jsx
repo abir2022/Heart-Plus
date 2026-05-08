@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import ScanECG from './pages/ScanECG';
 import DiagnosticDetail from './pages/DiagnosticDetail';
 import PatientConsultation from './pages/PatientConsultation';
+import Login from './pages/Login';
+import PatientPortal from './pages/PatientPortal';
+import Home from './pages/Home';
 
 // Placeholder components for other routes
 const Placeholder = ({ title }) => (
@@ -15,19 +18,40 @@ const Placeholder = ({ title }) => (
 );
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  const handleLogin = (userData) => {
+    setUser(userData);
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+  };
+
   return (
     <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/scan" element={<ScanECG />} />
-          <Route path="/report/:id" element={<DiagnosticDetail />} />
-          <Route path="/patients" element={<Placeholder title="Patient Records" />} />
-          <Route path="/reports" element={<Placeholder title="Lab Reports" />} />
-          <Route path="/prescriptions" element={<PatientConsultation />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Layout>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login onLogin={handleLogin} />} />
+        <Route path="/patient-portal" element={<PatientPortal />} />
+        
+        <Route path="/dashboard/*" element={
+          user ? (
+            <Layout user={user} onLogout={handleLogout}>
+              <Routes>
+                <Route path="/" element={<Dashboard user={user} />} />
+                <Route path="/scan" element={<ScanECG user={user} />} />
+                <Route path="/prescriptions" element={<PatientConsultation user={user} />} />
+                <Route path="/report/:id" element={<DiagnosticDetail user={user} />} />
+                <Route path="/patients" element={<Placeholder title="Patient Records" />} />
+                <Route path="/reports" element={<Placeholder title="Lab Reports" />} />
+              </Routes>
+            </Layout>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        } />
+      </Routes>
     </Router>
   );
 }

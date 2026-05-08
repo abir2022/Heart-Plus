@@ -77,7 +77,8 @@ CREATE TABLE IF NOT EXISTS prescriptions (
   FOREIGN KEY (patient_id) REFERENCES patients(id)
 );
 
--- Insert some seed data for testing
-INSERT INTO users (id, name, role, hospital_id) VALUES ('user_1', 'Dr. Sarah Chen', 'lab_assistant', 'HOSP-001');
-INSERT INTO patients (id, name, mobile_number, age, gender, blood_group) VALUES ('pat_1', 'John Doe', '9876543210', 45, 'Male', 'O+');
-INSERT INTO patients (id, name, mobile_number, age, gender, blood_group) VALUES ('pat_2', 'Rajesh Kumar', '1234567', 54, 'Male', 'O+');
+-- Seed Patient for Demo
+INSERT OR IGNORE INTO patients (id, name, mobile, age, gender) VALUES 
+('pat_1', 'John Doe', '01712345678', 45, 'Male');
+
+-- End of Schema Reset

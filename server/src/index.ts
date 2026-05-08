@@ -45,25 +45,56 @@ export default {
 				return Response.json(patient, { headers: corsHeaders });
 			}
 
-			// --- POST: Upload ECG & Analyze ---
-			if (pathname === "/api/upload" && request.method === "POST") {
+			// --- POST: Login ---
+			if (url.pathname === "/api/login" && request.method === "POST") {
+				const { email, password } = await request.json() as any;
+				const user = await env.DB.prepare("SELECT * FROM users WHERE email = ? AND password = ?").bind(email, password).first();
+				
+				if (!user) return Response.json({ error: "Invalid credentials" }, { status: 401, headers: corsHeaders });
+				return Response.json({ success: true, user }, { headers: corsHeaders });
+			}
+
+			// --- GET: Public Search (For Patients) ---
+			if (url.pathname === "/api/public/search" && request.method === "GET") {
+				const reportId = url.searchParams.get("reportId");
+				const mobile = url.searchParams.get("mobile");
+
+				const report = await env.DB.prepare(
+					`SELECT r.*, p.name as patient_name, p.mobile, a.risk_level, a.observations, a.biomarkers, pres.content as prescription
+					 FROM ecg_reports r
+					 JOIN patients p ON r.patient_id = p.id
+					 LEFT JOIN ai_analysis a ON r.id = a.report_id
+					 LEFT JOIN prescriptions pres ON r.id = pres.report_id
+					 WHERE r.id = ? AND p.mobile = ? AND r.is_approved = 1`
+				).bind(reportId, mobile).first();
+
+				if (!report) return Response.json({ error: "Report not found or not yet approved by doctor" }, { status: 404, headers: corsHeaders });
+				return Response.json({ success: true, report }, { headers: corsHeaders });
+			}
+
+			// --- POST: Approve Report (For Doctors) ---
+			if (url.pathname === "/api/approve-report" && request.method === "POST") {
+				const { reportId } = await request.json() as any;
+				await env.DB.prepare("UPDATE ecg_reports SET is_approved = 1 WHERE id = ?").bind(reportId).run();
+				return Response.json({ success: true }, { headers: corsHeaders });
+			}
+
+			// --- POST: Upload ECG ---
+			if (url.pathname === "/api/upload" && request.method === "POST") {
 				const formData = await request.formData();
 				const file = formData.get("file") as File;
 				const patientId = formData.get("patientId") as string;
-				const userId = formData.get("userId") as string;
-
-				if (!file || !patientId) return new Response("Missing data", { status: 400, headers: corsHeaders });
-
-				const reportId = `report_${crypto.randomUUID().slice(0, 8)}`;
-				const fileName = `${reportId}_${file.name}`;
+				const userId = formData.get("userId") as string; // alex.rivera (lab-assistant)
 
 				// 1. Upload to R2
-				await env.BUCKET.put(fileName, file.stream());
-				const fileUrl = `/storage/${fileName}`;
+				const reportId = `report_${crypto.randomUUID().slice(0, 8)}`;
+				const fileKey = `${reportId}-${file.name}`;
+				await env.BUCKET.put(fileKey, file.stream());
+				const fileUrl = `${url.origin}/api/files/${fileKey}`;
 
-				// 2. Save Report Entry
+				// 2. Save to D1
 				await env.DB.prepare(
-					"INSERT INTO ecg_reports (id, patient_id, uploaded_by, file_url, status) VALUES (?, ?, ?, ?, 'processing')"
+					"INSERT INTO ecg_reports (id, patient_id, uploaded_by, file_url, status, is_approved) VALUES (?, ?, ?, ?, 'processing', 0)"
 				).bind(reportId, patientId, userId, fileUrl).run();
 
 				// 3. Real AI Analysis using Gemini

@@ -6,6 +6,35 @@
 const API_BASE_URL = "https://heart-plus-backend.abirislam2020.workers.dev/api";
 
 export const api = {
+  // Login
+  login: async (email, password) => {
+    const response = await fetch(`${API_BASE_URL}/login`, {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
+    });
+    if (!response.ok) throw new Error("Invalid credentials");
+    return response.json();
+  },
+
+  // Public Search for Patients
+  publicSearch: async (reportId, mobile) => {
+    const response = await fetch(`${API_BASE_URL}/public/search?reportId=${reportId}&mobile=${mobile}`);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Report not found");
+    }
+    return response.json();
+  },
+
+  // Approve Report (Doctor Only)
+  approveReport: async (reportId) => {
+    const response = await fetch(`${API_BASE_URL}/approve-report`, {
+      method: 'POST',
+      body: JSON.stringify({ reportId })
+    });
+    return response.json();
+  },
+
   // Fetch recent reports
   getReports: async () => {
     const response = await fetch(`${API_BASE_URL}/reports`);

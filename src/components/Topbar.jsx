@@ -7,31 +7,25 @@ const Topbar = () => {
     <header className="topbar">
       <div className="search-container">
         <Search size={18} className="search-icon" />
-        <input 
-          type="text" 
-          placeholder="Search Patients by Name or Hospital ID..." 
-          className="search-input"
-        />
+    <header className="topbar card">
+      <div className="search-bar">
+        <Search size={18} />
+        <input type="text" placeholder="Search patients, reports, or records..." />
       </div>
-      
+
       <div className="topbar-actions">
-        <button className="action-btn">
+        <button className="icon-btn">
           <Bell size={20} />
           <span className="notification-dot"></span>
         </button>
-        <button className="action-btn">
-          <Settings size={20} />
-        </button>
-        
         <div className="divider"></div>
-        
-        <div className="user-profile">
-          <div className="user-info">
-            <span className="user-name">Dr. Sarah Chen</span>
-            <span className="user-role">Lab Supervisor</span>
+        <div className="user-profile-sm">
+          <div className="user-info text-right">
+            <span className="user-name">{user?.name}</span>
+            <span className="user-role">{user?.role}</span>
           </div>
-          <div className="user-avatar">
-            <User size={20} />
+          <div className="user-avatar-sm">
+            {user?.name?.charAt(0)}
           </div>
         </div>
       </div>

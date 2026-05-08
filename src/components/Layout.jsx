@@ -3,13 +3,13 @@ import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import './Layout.css';
 
-const Layout = ({ children }) => {
+const Layout = ({ children, user, onLogout }) => {
   return (
-    <div className="app-container">
-      <Sidebar />
+    <div className="layout-container">
+      <Sidebar user={user} onLogout={onLogout} />
       <div className="main-wrapper">
-        <Topbar />
-        <main className="content-area animate-slide-in">
+        <Topbar user={user} />
+        <main className="content-area">
           {children}
         </main>
       </div>
