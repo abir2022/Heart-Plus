@@ -51,7 +51,7 @@ export const api = {
   },
 
   // Upload ECG
-  uploadECG: async (file, patientId, userId = "user_1") => {
+  uploadECG: async (file, patientId, userId) => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("patientId", patientId);

@@ -7,7 +7,7 @@ import Waveform from '../components/Waveform';
 import { api } from '../services/api';
 import './ScanECG.css';
 
-const ScanECG = () => {
+const ScanECG = ({ user }) => {
   const navigate = useNavigate();
   const [isDragging, setIsDragging] = useState(false);
   const [recentReports, setRecentReports] = useState([]);
@@ -31,7 +31,7 @@ const ScanECG = () => {
   const handleFileUpload = async (file) => {
     try {
       // For demo, we use pat_1 (John Doe)
-      const result = await api.uploadECG(file, 'pat_1');
+      const result = await api.uploadECG(file, 'pat_1', user.id);
       // Instead of just alerting, we navigate to the result page
       navigate(`/dashboard/report/${result.reportId}`);
     } catch (err) {

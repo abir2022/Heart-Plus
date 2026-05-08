@@ -39,7 +39,7 @@ export default {
 				const mobile = url.searchParams.get("mobile");
 				if (!mobile) return new Response("Mobile number required", { status: 400, headers: corsHeaders });
 
-				const patient = await env.DB.prepare("SELECT * FROM patients WHERE mobile_number = ?").bind(mobile).first();
+				const patient = await env.DB.prepare("SELECT * FROM patients WHERE mobile = ?").bind(mobile).first();
 				if (!patient) return new Response("Patient not found", { status: 404, headers: corsHeaders });
 
 				return Response.json(patient, { headers: corsHeaders });
@@ -130,20 +130,23 @@ export default {
 						const aiData = await response.json() as any;
 						if (aiData.error) throw new Error(aiData.error.message);
 						
-						let aiText = aiData.candidates[0].content.parts[0].text;
-						console.log("Raw AI Response:", aiText);
-						
-						// Clean potential markdown or extra characters
-						aiText = aiText.replace(/```json/g, "").replace(/```/g, "").trim();
-						
-						const parsedAI = JSON.parse(aiText);
-
-						aiResult = {
-							confidence_score: Number(parsedAI.confidence) || 85,
-							risk_level: parsedAI.risk || "STABLE",
-							observations: parsedAI.observations || "Analysis complete.",
-							biomarkers: JSON.stringify(parsedAI.biomarkers || [])
-						};
+						if (aiData.candidates && aiData.candidates[0]?.content?.parts[0]?.text) {
+							let aiText = aiData.candidates[0].content.parts[0].text;
+							console.log("Raw AI Response:", aiText);
+							
+							// Clean potential markdown
+							aiText = aiText.replace(/```json/g, "").replace(/```/g, "").trim();
+							
+							const parsedAI = JSON.parse(aiText);
+							aiResult = {
+								confidence_score: Number(parsedAI.confidence) || 85,
+								risk_level: parsedAI.risk || "STABLE",
+								observations: parsedAI.observations || "Analysis complete.",
+								biomarkers: JSON.stringify(parsedAI.biomarkers || [])
+							};
+						} else {
+							throw new Error("Invalid AI response format");
+						}
 					} catch (err: any) {
 						console.error("Gemini API Error:", err);
 						aiResult.observations = `AI Service Error: ${err.message}. Default safety analysis applied.`;
