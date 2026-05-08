@@ -19,7 +19,7 @@ const Dashboard = () => {
           <h1>Dashboard Overview</h1>
           <p className="subtitle">Welcome back, Dr. Chen. Here's what's happening today.</p>
         </div>
-        <button className="btn-primary" onClick={() => navigate('/scan')}>
+        <button className="btn-primary" onClick={() => navigate('/dashboard/scan')}>
           <Activity size={18} />
           <span>New Scan</span>
         </button>

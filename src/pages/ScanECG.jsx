@@ -33,7 +33,7 @@ const ScanECG = () => {
       // For demo, we use pat_1 (John Doe)
       const result = await api.uploadECG(file, 'pat_1');
       // Instead of just alerting, we navigate to the result page
-      navigate(`/report/${result.reportId}`);
+      navigate(`/dashboard/report/${result.reportId}`);
     } catch (err) {
       alert("Upload failed: " + err.message);
     }
@@ -157,7 +157,7 @@ const ScanECG = () => {
                 <td>
                   <button 
                     className="text-link" 
-                    onClick={() => navigate(`/report/${report.id}`)}
+                    onClick={() => navigate(`/dashboard/report/${report.id}`)}
                   >
                     View Log
                   </button>

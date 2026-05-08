@@ -5,12 +5,12 @@ import './Sidebar.css';
 
 const Sidebar = ({ user, onLogout }) => {
   const menuItems = [
-    { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/', roles: ['doctor', 'lab-assistant'] },
-    { icon: <Scan size={20} />, label: 'Scan New ECG', path: '/scan', roles: ['doctor', 'lab-assistant'] },
-    { icon: <FileText size={20} />, label: 'Lab Reports', path: '/reports', roles: ['doctor', 'lab-assistant'] },
-    { icon: <ClipboardList size={20} />, label: 'Prescriptions', path: '/prescriptions', roles: ['doctor'] },
-    { icon: <Users size={20} />, label: 'Patient Records', path: '/patients', roles: ['doctor'] },
-    { icon: <Settings size={20} />, label: 'Settings', path: '/settings', roles: ['doctor', 'lab-assistant'] },
+    { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/dashboard', roles: ['doctor', 'lab-assistant'] },
+    { icon: <Scan size={20} />, label: 'Scan New ECG', path: '/dashboard/scan', roles: ['doctor', 'lab-assistant'] },
+    { icon: <FileText size={20} />, label: 'Lab Reports', path: '/dashboard/reports', roles: ['doctor', 'lab-assistant'] },
+    { icon: <ClipboardList size={20} />, label: 'Prescriptions', path: '/dashboard/prescriptions', roles: ['doctor'] },
+    { icon: <Users size={20} />, label: 'Patient Records', path: '/dashboard/patients', roles: ['doctor'] },
+    { icon: <Settings size={20} />, label: 'Settings', path: '/dashboard/settings', roles: ['doctor', 'lab-assistant'] },
   ];
 
   const filteredMenu = menuItems.filter(item => item.roles.includes(user.role));
