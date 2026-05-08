@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Search, Phone, FileText, Download, CheckCircle, Clock } from 'lucide-react';
+import { Search, Phone, FileText, Download, CheckCircle, Clock, Printer } from 'lucide-react';
 import { api } from '../services/api';
 import './PatientPortal.css';
 
@@ -175,7 +175,8 @@ const PatientPortal = () => {
             </button>
           </div>
         </div>
-      )}
+        ) : null}
+      </div>
 
       {!report && !loading && (
         <div className="portal-info animate-fade-in">
