@@ -71,6 +71,27 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
+.list-item.pending-item {
+  cursor: default;
+  opacity: 0.8;
+}
+
+.list-item.pending-item:hover {
+  transform: none;
+  border-color: transparent;
+  background: #f8fafc;
+  box-shadow: none;
+}
+
+.pending-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #d97706;
+  background: #fef3c7;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+}
+
 .item-main {
   display: flex;
   align-items: center;

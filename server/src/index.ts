@@ -131,14 +131,18 @@ export default {
 					return Response.json({ success: true, report }, { headers: corsHeaders });
 				}
 
-				// Case 2: Search by Mobile only (List all approved reports)
+				// Case 2: Search by Mobile only (List ALL reports, approved or pending)
 				const { results: reports } = await env.DB.prepare(
-					`SELECT r.id, r.created_at, r.status, p.name as patient_name
+					`SELECT r.id, r.created_at, r.status, r.is_approved, p.name as patient_name
 					 FROM ecg_reports r
 					 JOIN patients p ON r.patient_id = p.id
-					 WHERE p.mobile = ? AND r.is_approved = 1
+					 WHERE p.mobile = ?
 					 ORDER BY r.created_at DESC`
 				).bind(mobile).all();
+
+				if (reports.length === 0) {
+					return Response.json({ error: "No reports found for this mobile number." }, { status: 404, headers: corsHeaders });
+				}
 
 				return Response.json({ success: true, reports }, { headers: corsHeaders });
 			}

@@ -105,16 +105,26 @@ const PatientPortal = () => {
         ) : reportsList.length > 0 ? (
           <div className="reports-list card animate-slide-up">
             <h3>Diagnostic History</h3>
-            <p className="subtitle">Found {reportsList.length} approved reports for this mobile number.</p>
+            <p className="subtitle">Found {reportsList.length} report(s) for this mobile number.</p>
             <div className="list-items">
               {reportsList.map((rep) => (
-                <div key={rep.id} className="list-item flex-between" onClick={() => selectReport(rep.id)}>
+                <div
+                  key={rep.id}
+                  className={`list-item flex-between ${rep.is_approved ? 'clickable' : 'pending-item'}`}
+                  onClick={() => rep.is_approved ? selectReport(rep.id) : null}
+                >
                   <div className="item-main">
-                    <span className="report-date">{new Date(rep.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                    <span className="report-date">
+                      {new Date(rep.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    </span>
                     <span className="report-id-badge">{rep.id}</span>
                   </div>
                   <div className="item-action">
-                    <button className="btn-text">View Report <Search size={14} /></button>
+                    {rep.is_approved ? (
+                      <button className="btn-text">View Report <Search size={14} /></button>
+                    ) : (
+                      <span className="pending-badge">⏳ Pending Doctor Review</span>
+                    )}
                   </div>
                 </div>
               ))}
