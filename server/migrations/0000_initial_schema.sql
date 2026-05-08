@@ -1,38 +1,52 @@
--- Heart+ D1 Database Schema
+-- Reset Tables for Update
+DROP TABLE IF EXISTS ai_analysis;
+DROP TABLE IF EXISTS prescriptions;
+DROP TABLE IF EXISTS ecg_reports;
+DROP TABLE IF EXISTS patients;
+DROP TABLE IF EXISTS users;
 
--- Users table
+-- Users Table (Doctors and Lab Assistants)
 CREATE TABLE IF NOT EXISTS users (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  role TEXT CHECK(role IN ('doctor', 'lab_assistant')) NOT NULL,
-  hospital_id TEXT UNIQUE NOT NULL,
-  email TEXT UNIQUE,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL, -- In production, use hashed passwords
+    role TEXT CHECK(role IN ('doctor', 'lab-assistant')) DEFAULT 'doctor',
+    specialty TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Patients table
+-- Seed Users
+INSERT OR IGNORE INTO users (id, name, email, password, role, specialty) VALUES 
+('doc_1', 'Dr. Sarah Chen', 'sarah.chen@heartplus.com', 'doc123', 'doctor', 'Cardiologist'),
+('doc_2', 'Dr. James Wilson', 'james.wilson@heartplus.com', 'doc123', 'doctor', 'Cardiac Surgeon'),
+('doc_3', 'Dr. Elena Rodriguez', 'elena.r@heartplus.com', 'doc123', 'doctor', 'Emergency Physician'),
+('doc_4', 'Dr. Marcus Thorne', 'marcus.t@heartplus.com', 'doc123', 'doctor', 'Cardiologist'),
+('doc_5', 'Dr. Priya Sharma', 'priya.s@heartplus.com', 'doc123', 'doctor', 'Internal Medicine'),
+('lab_1', 'Alex Rivera', 'alex.rivera@heartplus.com', 'lab123', 'lab-assistant', 'Head Technician');
+
+-- Patients Table
 CREATE TABLE IF NOT EXISTS patients (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  mobile_number TEXT UNIQUE NOT NULL,
-  age INTEGER,
-  gender TEXT,
-  blood_group TEXT,
-  hospital_id TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    age INTEGER,
+    gender TEXT,
+    mobile TEXT UNIQUE NOT NULL,
+    history TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- ECG Reports table
+-- ECG Reports Table
 CREATE TABLE IF NOT EXISTS ecg_reports (
-  id TEXT PRIMARY KEY,
-  patient_id TEXT NOT NULL,
-  uploaded_by TEXT NOT NULL,
-  file_url TEXT NOT NULL,
-  analysis_type TEXT DEFAULT 'Routine Check',
-  status TEXT CHECK(status IN ('processing', 'ai-evaluated', 'critical', 'stable', 'sent')) DEFAULT 'processing',
-  upload_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (patient_id) REFERENCES patients(id),
-  FOREIGN KEY (uploaded_by) REFERENCES users(id)
+    id TEXT PRIMARY KEY,
+    patient_id TEXT NOT NULL,
+    uploaded_by TEXT NOT NULL,
+    file_url TEXT,
+    status TEXT DEFAULT 'processing', -- processing, ai-evaluated, stable, critical, prescribed
+    is_approved BOOLEAN DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (patient_id) REFERENCES patients(id),
+    FOREIGN KEY (uploaded_by) REFERENCES users(id)
 );
 
 -- AI Analysis table
