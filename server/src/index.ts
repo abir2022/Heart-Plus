@@ -45,6 +45,61 @@ export default {
 				return Response.json(patient, { headers: corsHeaders });
 			}
 
+			// --- GET: Patient Full Profile + Reports by Mobile (for Doctor) ---
+			if (pathname === "/api/patients/by-mobile" && request.method === "GET") {
+				const mobile = url.searchParams.get("mobile");
+				if (!mobile) return Response.json({ error: "Mobile required" }, { status: 400, headers: corsHeaders });
+
+				const patient = await env.DB.prepare("SELECT * FROM patients WHERE mobile = ?").bind(mobile).first();
+				if (!patient) return Response.json({ error: "No patient found with this mobile number." }, { status: 404, headers: corsHeaders });
+
+				const { results: reports } = await env.DB.prepare(
+					`SELECT r.id, r.status, r.is_approved, r.created_at, r.file_url,
+					        a.risk_level, a.observations, a.biomarkers, a.confidence_score, a.id as ai_id,
+					        pres.diagnosis, pres.notes, pres.medications, pres.doctor_signature, pres.id as pres_id
+					 FROM ecg_reports r
+					 LEFT JOIN ai_analysis a ON r.id = a.report_id
+					 LEFT JOIN prescriptions pres ON r.id = pres.report_id
+					 WHERE r.patient_id = ?
+					 ORDER BY r.created_at DESC`
+				).bind((patient as any).id).all();
+
+				return Response.json({ patient, reports }, { headers: corsHeaders });
+			}
+
+			// --- POST: Finalize Report (Doctor edits AI + writes prescription + approves) ---
+			if (pathname === "/api/finalize-report" && request.method === "POST") {
+				const data = await request.json() as any;
+				const { reportId, doctorId, patientId, aiId,
+				        risk_level, observations, biomarkers,
+				        diagnosis, notes, medications, doctor_signature } = data;
+
+				// 1. Update AI analysis with doctor's corrections
+				if (aiId) {
+					await env.DB.prepare(
+						"UPDATE ai_analysis SET risk_level = ?, observations = ?, biomarkers = ? WHERE id = ?"
+					).bind(risk_level, observations, biomarkers, aiId).run();
+				}
+
+				// 2. Save or update prescription
+				const existing = await env.DB.prepare("SELECT id FROM prescriptions WHERE report_id = ?").bind(reportId).first() as any;
+				if (existing) {
+					await env.DB.prepare(
+						"UPDATE prescriptions SET diagnosis = ?, notes = ?, medications = ?, doctor_signature = ? WHERE report_id = ?"
+					).bind(diagnosis, notes, medications, doctor_signature, reportId).run();
+				} else {
+					const presId = `pres_${crypto.randomUUID().slice(0, 8)}`;
+					await env.DB.prepare(
+						"INSERT INTO prescriptions (id, report_id, doctor_id, patient_id, diagnosis, notes, medications, doctor_signature) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+					).bind(presId, reportId, doctorId, patientId, diagnosis, notes, medications, doctor_signature).run();
+				}
+
+				// 3. Approve the report
+				await env.DB.prepare("UPDATE ecg_reports SET is_approved = 1, status = 'approved' WHERE id = ?").bind(reportId).run();
+
+				return Response.json({ success: true }, { headers: corsHeaders });
+			}
+
 			// --- POST: Login ---
 			if (url.pathname === "/api/login" && request.method === "POST") {
 				const { email, password } = await request.json() as any;
@@ -220,10 +275,13 @@ export default {
 			if (pathname.startsWith("/api/reports/") && request.method === "GET") {
 				const reportId = pathname.split("/").pop();
 				const report = await env.DB.prepare(
-					"SELECT r.*, p.name as patient_name, p.age, p.gender, a.confidence_score, a.risk_level, a.observations, a.biomarkers " +
+					"SELECT r.*, p.name as patient_name, p.age, p.gender, p.mobile, " +
+					"a.confidence_score, a.risk_level, a.observations, a.biomarkers, " +
+					"pres.diagnosis, pres.notes, pres.medications, pres.doctor_signature " +
 					"FROM ecg_reports r " +
 					"JOIN patients p ON r.patient_id = p.id " +
 					"LEFT JOIN ai_analysis a ON r.id = a.report_id " +
+					"LEFT JOIN prescriptions pres ON r.id = pres.report_id " +
 					"WHERE r.id = ?"
 				).bind(reportId).first();
 

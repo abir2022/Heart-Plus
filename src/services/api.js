@@ -82,4 +82,25 @@ export const api = {
     if (!response.ok) throw new Error("Failed to save prescription");
     return response.json();
   },
+
+  // Get full patient profile + all ECG reports by mobile (Doctor's view)
+  getPatientByMobile: async (mobile) => {
+    const response = await fetch(`${API_BASE_URL}/patients/by-mobile?mobile=${encodeURIComponent(mobile)}`);
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || "Patient not found");
+    }
+    return response.json();
+  },
+
+  // Finalize report: update AI + save prescription + approve all in one
+  finalizeReport: async (data) => {
+    const response = await fetch(`${API_BASE_URL}/finalize-report`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error("Failed to finalize report");
+    return response.json();
+  },
 };

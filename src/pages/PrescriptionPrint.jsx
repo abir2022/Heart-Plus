@@ -131,7 +131,10 @@ const PrescriptionPrint = () => {
         <div className="signature-area">
           <div className="sig-line"></div>
           <p>Authorized Physician Signature</p>
-          <p className="doc-name">Dr. Sarah Chen, MBBS, MD (Cardiology)</p>
+          <p className="doc-name">{report.doctor_signature || 'Dr. Sarah Chen, MBBS, MD (Cardiology)'}</p>
+          <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px' }}>
+            Finalized: {new Date(report.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}
+          </p>
         </div>
         <div className="print-disclaimer">
           <p>This is a computer-generated medical document. Validated by Heart+ AI Diagnostic Engine v4.2.0.</p>
