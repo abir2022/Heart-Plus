@@ -3,7 +3,7 @@
  * Connects the React frontend to the Cloudflare backend.
  */
 
-const API_BASE_URL = "http://127.0.0.1:8787/api";
+const API_BASE_URL = "https://heart-plus-backend.abirislam2020.workers.dev/api";
 
 export const api = {
   // Fetch recent reports
