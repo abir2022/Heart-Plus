@@ -1,0 +1,17 @@
+.waveform-container {
+  width: 100%;
+  padding: 1rem;
+  background-color: transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.waveform-container .recharts-cartesian-grid-horizontal line {
+  stroke-opacity: 0.5;
+}
+
+.waveform-container .recharts-tooltip-cursor {
+  stroke: var(--primary-blue);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}

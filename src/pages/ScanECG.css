@@ -1,0 +1,164 @@
+.scan-ecg {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.scan-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.upload-zone {
+  border: 2px dashed var(--border-color);
+  background-color: var(--bg-surface);
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.upload-zone.dragging {
+  border-color: var(--primary-blue);
+  background-color: var(--primary-blue-light);
+}
+
+.upload-content {
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 400px;
+}
+
+.upload-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  background-color: var(--primary-blue-light);
+  border-radius: 50%;
+}
+
+.upload-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.preview-zone {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.format-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.preview-content {
+  flex: 1;
+  background-color: #000;
+  border-radius: var(--radius-md);
+  margin-top: 1rem;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(0,210,255,0.1) 0%, rgba(0,210,255,0) 100%);
+  pointer-events: none;
+}
+
+.scanning-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 100%;
+  background-color: #00d2ff;
+  box-shadow: 0 0 15px #00d2ff;
+  animation: scan 3s linear infinite;
+}
+
+@keyframes scan {
+  from { left: 0; }
+  to { left: 100%; }
+}
+
+.reports-section {
+  padding: 0;
+  overflow: hidden;
+}
+
+.reports-section .card-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.reports-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.reports-table th {
+  text-align: left;
+  padding: 1rem 2rem;
+  background-color: var(--bg-main);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.reports-table td {
+  padding: 1.25rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+}
+
+.patient-cell {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.avatar {
+  width: 35px;
+  height: 35px;
+  background-color: var(--primary-blue-light);
+  color: var(--primary-blue);
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.font-600 { font-weight: 600; }
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.text-link {
+  background: transparent;
+  border: none;
+  color: var(--primary-blue);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (max-width: 1200px) {
+  .scan-grid {
+    grid-template-columns: 1fr;
+  }
+}

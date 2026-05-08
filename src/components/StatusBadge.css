@@ -1,0 +1,47 @@
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 100px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.status-badge.critical {
+  background-color: var(--status-critical-bg);
+  color: var(--status-critical);
+}
+.status-badge.critical .dot { background-color: var(--status-critical); }
+
+.status-badge.stable {
+  background-color: var(--status-stable-bg);
+  color: var(--status-stable);
+}
+.status-badge.stable .dot { background-color: var(--status-stable); }
+
+.status-badge.processing {
+  background-color: var(--status-processing-bg);
+  color: #856404;
+}
+.status-badge.processing .dot { background-color: var(--status-processing); }
+
+.status-badge.archived {
+  background-color: #e2e3e5;
+  color: #383d41;
+}
+.status-badge.archived .dot { background-color: #6c757d; }
+
+.status-badge.ai-evaluated {
+  background-color: #e7f1ff;
+  color: var(--primary-blue);
+}
+.status-badge.ai-evaluated .dot { background-color: var(--primary-blue); }

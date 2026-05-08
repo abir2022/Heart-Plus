@@ -1,0 +1,36 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "heart-plus-backend",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-05-07",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"observability": {
+		"enabled": true
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "heart-plus-db",
+			"database_id": "local-db-placeholder",
+			"migrations_dir": "migrations"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "BUCKET",
+			"bucket_name": "ecg-scans"
+		}
+	],
+	"ai": {
+		"binding": "AI"
+	},
+	"vars": {
+		"ENVIRONMENT": "development"
+	}
+}

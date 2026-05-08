@@ -1,0 +1,265 @@
+.patient-consultation {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.search-form input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.consultation-content {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  grid-template-rows: auto auto;
+  gap: 1.5rem;
+}
+
+.patient-profile {
+  grid-row: span 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  background-color: #e9ecef;
+  border-radius: var(--radius-lg);
+  color: var(--text-secondary);
+}
+
+.tags {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.age-tag {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.condition-tag {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.25rem 0.75rem;
+  border-radius: 100px;
+  background-color: var(--status-stable-bg);
+  color: var(--status-stable);
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.ecg-analysis-summary {
+  padding: 1.5rem;
+}
+
+.toggle-compare {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.analysis-box {
+  background-color: #f8f9fa;
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-top: 1rem;
+}
+
+.analysis-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px dotted var(--border-color);
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric .label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.metric .value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.metric .value.success {
+  color: var(--status-stable);
+}
+
+.prescription-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.form-group input, .form-group textarea {
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus, .form-group textarea:focus {
+  border-color: var(--primary-blue);
+}
+
+.form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-footer .hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.prescription-preview {
+  grid-column: span 2;
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  padding: 3rem;
+  min-height: 400px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.hospital-brand h3 {
+  color: var(--primary-blue);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.hospital-contact {
+  text-align: right;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.preview-body {
+  margin-top: 4rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.preview-line {
+  height: 1px;
+  background-color: #f1f3f5;
+  width: 100%;
+}
+
+.preview-line.short { width: 60%; }
+
+.preview-signature {
+  margin-top: auto;
+  justify-content: flex-end;
+}
+
+.sig-line {
+  border-top: 1px solid var(--text-primary);
+  width: 200px;
+  padding-top: 0.5rem;
+  text-align: center;
+}
+
+.sig-line p {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.empty-state {
+  height: 60vh;
+}
+
+.search-illustration {
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 1200px) {
+  .consultation-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .patient-profile {
+    grid-row: span 1;
+  }
+  
+  .prescription-preview {
+    grid-column: span 1;
+  }
+}

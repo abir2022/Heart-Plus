@@ -1,0 +1,225 @@
+.diagnostic-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.back-btn {
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary-blue);
+  font-weight: 600;
+  padding: 0;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 1.5rem;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.dot-sep {
+  width: 4px;
+  height: 4px;
+  background-color: var(--border-color);
+  border-radius: 50%;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.vitals-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.vital-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.vital-item .label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.vital-item .value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.vital-item .unit {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.ai-card {
+  background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+}
+
+.engine-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  background-color: #f1f3f5;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+.risk-level {
+  font-weight: 800;
+  font-size: 1.1rem;
+  margin-top: -10px;
+}
+
+.ai-observation-box {
+  background-color: #fff5f5;
+  border: 1px solid #ffc9c9;
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.obs-header {
+  color: var(--status-critical);
+  font-weight: 700;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.ai-observation-box p {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #495057;
+}
+
+.ai-meta {
+  margin: 1.25rem 0;
+}
+
+.ai-meta span {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.progress-bar {
+  height: 6px;
+  background-color: #e9ecef;
+  border-radius: 100px;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background-color: var(--primary-blue);
+}
+
+.biomarkers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  background-color: #f1f3f5;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.observations-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.obs-list {
+  padding-left: 1.25rem;
+}
+
+.obs-list li {
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.page-footer {
+  padding: 1.5rem 2rem;
+  background-color: var(--bg-surface);
+}
+
+.footer-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.mt-1 { margin-top: 1rem; }
+
+@media (max-width: 1200px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  .sidebar, .topbar, .breadcrumb, .header-actions, .page-footer, .back-btn {
+    display: none !important;
+  }
+  
+  .main-wrapper {
+    padding-left: 0 !important;
+  }
+  
+  .content-area {
+    padding: 0 !important;
+  }
+  
+  .diagnostic-detail {
+    gap: 1rem;
+  }
+  
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #eee !important;
+    break-inside: avoid;
+  }
+  
+  .detail-grid {
+    display: block;
+  }
+  
+  .ai-report-sidebar {
+    margin-top: 1.5rem;
+  }
+}
