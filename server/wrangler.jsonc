@@ -17,7 +17,7 @@
 		{
 			"binding": "DB",
 			"database_name": "heart-plus-db",
-			"database_id": "local-db-placeholder",
+			"database_id": "b296fa2e-816f-4a28-9281-37540d690533",
 			"migrations_dir": "migrations"
 		}
 	],
