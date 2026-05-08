@@ -4,7 +4,7 @@ import Waveform from '../components/Waveform';
 import { api } from '../services/api';
 import './PatientConsultation.css';
 
-const PatientConsultation = () => {
+const PatientConsultation = ({ user }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [patient, setPatient] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -27,6 +27,10 @@ const PatientConsultation = () => {
   };
 
   const handleFinalize = async () => {
+    if (user.role !== 'doctor') {
+      alert("Access Denied: Only doctors can finalize prescriptions.");
+      return;
+    }
     if (!patient) return;
     try {
       await api.savePrescription({

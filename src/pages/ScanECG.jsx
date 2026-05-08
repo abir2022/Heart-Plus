@@ -10,6 +10,7 @@ import './ScanECG.css';
 const ScanECG = ({ user }) => {
   const navigate = useNavigate();
   const [isDragging, setIsDragging] = useState(false);
+  const [patientMobile, setPatientMobile] = useState('');
   const [recentReports, setRecentReports] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,10 +30,12 @@ const ScanECG = ({ user }) => {
   };
 
   const handleFileUpload = async (file) => {
+    if (!patientMobile) {
+      alert("Please enter patient mobile number first.");
+      return;
+    }
     try {
-      // For demo, we use pat_1 (John Doe)
-      const result = await api.uploadECG(file, 'pat_1', user.id);
-      // Instead of just alerting, we navigate to the result page
+      const result = await api.uploadECG(file, patientMobile, user.id);
       navigate(`/dashboard/report/${result.reportId}`);
     } catch (err) {
       alert("Upload failed: " + err.message);
@@ -62,10 +65,18 @@ const ScanECG = ({ user }) => {
           <h1>Scan New ECG</h1>
           <p className="subtitle">Upload patient waveform data for AI analysis and physician review.</p>
         </div>
-        <button className="btn-primary">
-          <Printer size={18} />
-          <span>Generate Printable Report</span>
-        </button>
+        <div className="patient-quick-input card flex-center" style={{ padding: '0.5rem 1rem', gap: '1rem' }}>
+          <div className="input-group">
+            <label style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--primary-blue)' }}>PATIENT MOBILE</label>
+            <input 
+              type="text" 
+              placeholder="Enter mobile..." 
+              style={{ border: 'none', background: 'transparent', outline: 'none', fontWeight: 600 }}
+              value={patientMobile}
+              onChange={(e) => setPatientMobile(e.target.value)}
+            />
+          </div>
+        </div>
       </div>
 
       <div className="scan-grid">

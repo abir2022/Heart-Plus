@@ -11,11 +11,12 @@ const PatientPortal = () => {
   const [reportId, setReportId] = useState(queryParams.get('reportId') || '');
   const [mobile, setMobile] = useState(queryParams.get('mobile') || '');
   const [report, setReport] = useState(null);
+  const [reportsList, setReportsList] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (reportId && mobile) {
+    if (mobile) {
       handleSearch(null, true);
     }
   }, []);
@@ -25,15 +26,26 @@ const PatientPortal = () => {
     setLoading(true);
     setError('');
     setReport(null);
+    setReportsList([]);
 
     try {
       const data = await api.publicSearch(reportId, mobile);
-      setReport(data.report);
+      if (data.report) {
+        setReport(data.report);
+      } else if (data.reports) {
+        setReportsList(data.reports);
+      }
     } catch (err) {
-      setError(err.message || 'Report not found or not yet approved by doctor.');
+      setError(err.message || 'Report not found or not yet approved.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const selectReport = (id) => {
+    setReportId(id);
+    // Trigger search for specific report
+    setTimeout(() => handleSearch(), 100);
   };
 
   return (
@@ -78,11 +90,38 @@ const PatientPortal = () => {
             <span>{loading ? 'Searching...' : 'Find My Report'}</span>
           </button>
         </form>
-        {error && <div className="error-message">{error}</div>}
       </div>
 
-      {report && (
-        <div className="report-display animate-scale-in">
+      <div className="portal-content">
+        {loading ? (
+          <div className="portal-loading flex-center">
+            <div className="loader"></div>
+            <p>Searching Medical Database...</p>
+          </div>
+        ) : error ? (
+          <div className="portal-error card animate-shake">
+            <p>{error}</p>
+          </div>
+        ) : reportsList.length > 0 ? (
+          <div className="reports-list card animate-slide-up">
+            <h3>Diagnostic History</h3>
+            <p className="subtitle">Found {reportsList.length} approved reports for this mobile number.</p>
+            <div className="list-items">
+              {reportsList.map((rep) => (
+                <div key={rep.id} className="list-item flex-between" onClick={() => selectReport(rep.id)}>
+                  <div className="item-main">
+                    <span className="report-date">{new Date(rep.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                    <span className="report-id-badge">{rep.id}</span>
+                  </div>
+                  <div className="item-action">
+                    <button className="btn-text">View Report <Search size={14} /></button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : report ? (
+          <div className="report-display animate-slide-up">
           <div className="report-summary card">
             <div className="flex-between">
               <div>

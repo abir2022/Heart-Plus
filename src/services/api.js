@@ -51,10 +51,10 @@ export const api = {
   },
 
   // Upload ECG
-  uploadECG: async (file, patientId, userId) => {
+  uploadECG: async (file, mobile, userId) => {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("patientId", patientId);
+    formData.append("mobile", mobile);
     formData.append("userId", userId);
 
     const response = await fetch(`${API_BASE_URL}/upload`, {

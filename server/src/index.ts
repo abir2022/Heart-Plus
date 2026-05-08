@@ -59,17 +59,33 @@ export default {
 				const reportId = url.searchParams.get("reportId");
 				const mobile = url.searchParams.get("mobile");
 
-				const report = await env.DB.prepare(
-					`SELECT r.*, p.name as patient_name, p.mobile, a.risk_level, a.observations, a.biomarkers, pres.content as prescription
+				if (!mobile) return Response.json({ error: "Mobile number required" }, { status: 400, headers: corsHeaders });
+
+				// Case 1: Search by Report ID + Mobile
+				if (reportId) {
+					const report = await env.DB.prepare(
+						`SELECT r.*, p.name as patient_name, p.mobile, a.risk_level, a.observations, a.biomarkers, pres.diagnosis, pres.notes, pres.medications
+						 FROM ecg_reports r
+						 JOIN patients p ON r.patient_id = p.id
+						 LEFT JOIN ai_analysis a ON r.id = a.report_id
+						 LEFT JOIN prescriptions pres ON r.id = pres.report_id
+						 WHERE r.id = ? AND p.mobile = ? AND r.is_approved = 1`
+					).bind(reportId, mobile).first();
+
+					if (!report) return Response.json({ error: "Report not found or not yet approved" }, { status: 404, headers: corsHeaders });
+					return Response.json({ success: true, report }, { headers: corsHeaders });
+				}
+
+				// Case 2: Search by Mobile only (List all approved reports)
+				const { results: reports } = await env.DB.prepare(
+					`SELECT r.id, r.created_at, r.status, p.name as patient_name
 					 FROM ecg_reports r
 					 JOIN patients p ON r.patient_id = p.id
-					 LEFT JOIN ai_analysis a ON r.id = a.report_id
-					 LEFT JOIN prescriptions pres ON r.id = pres.report_id
-					 WHERE r.id = ? AND p.mobile = ? AND r.is_approved = 1`
-				).bind(reportId, mobile).first();
+					 WHERE p.mobile = ? AND r.is_approved = 1
+					 ORDER BY r.created_at DESC`
+				).bind(mobile).all();
 
-				if (!report) return Response.json({ error: "Report not found or not yet approved by doctor" }, { status: 404, headers: corsHeaders });
-				return Response.json({ success: true, report }, { headers: corsHeaders });
+				return Response.json({ success: true, reports }, { headers: corsHeaders });
 			}
 
 			// --- POST: Approve Report (For Doctors) ---
@@ -79,20 +95,31 @@ export default {
 				return Response.json({ success: true }, { headers: corsHeaders });
 			}
 
-			// --- POST: Upload ECG ---
+			// --- POST: Upload ECG (Now with Mobile) ---
 			if (url.pathname === "/api/upload" && request.method === "POST") {
 				const formData = await request.formData();
 				const file = formData.get("file") as File;
-				const patientId = formData.get("patientId") as string;
-				const userId = formData.get("userId") as string; // alex.rivera (lab-assistant)
+				const mobile = formData.get("mobile") as string;
+				const userId = formData.get("userId") as string;
 
-				// 1. Upload to R2
+				if (!mobile) return Response.json({ error: "Patient mobile required" }, { status: 400, headers: corsHeaders });
+
+				// 1. Find or Create Patient
+				let patient = await env.DB.prepare("SELECT id FROM patients WHERE mobile = ?").bind(mobile).first() as any;
+				let patientId = patient?.id;
+
+				if (!patientId) {
+					patientId = `pat_${crypto.randomUUID().slice(0, 8)}`;
+					await env.DB.prepare("INSERT INTO patients (id, name, mobile) VALUES (?, 'New Patient', ?)").bind(patientId, mobile).run();
+				}
+
+				// 2. Upload to R2
 				const reportId = `report_${crypto.randomUUID().slice(0, 8)}`;
 				const fileKey = `${reportId}-${file.name}`;
 				await env.BUCKET.put(fileKey, file.stream());
 				const fileUrl = `${url.origin}/api/files/${fileKey}`;
 
-				// 2. Save to D1
+				// 3. Save to D1
 				await env.DB.prepare(
 					"INSERT INTO ecg_reports (id, patient_id, uploaded_by, file_url, status, is_approved) VALUES (?, ?, ?, ?, 'processing', 0)"
 				).bind(reportId, patientId, userId, fileUrl).run();
