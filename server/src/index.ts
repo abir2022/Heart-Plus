@@ -112,26 +112,35 @@ export default {
 			// --- GET: Public Search (For Patients) ---
 			if (url.pathname === "/api/public/search" && request.method === "GET") {
 				const reportId = url.searchParams.get("reportId");
-				const mobile = url.searchParams.get("mobile");
+				const mobile   = url.searchParams.get("mobile");
 
-				if (!mobile) return Response.json({ error: "Mobile number required" }, { status: 400, headers: corsHeaders });
+				if (!reportId && !mobile) {
+					return Response.json({ error: "Please provide a Report ID or Mobile Number." }, { status: 400, headers: corsHeaders });
+				}
 
-				// Case 1: Search by Report ID + Mobile
+				// Case 1: Report ID provided → fetch that specific report
 				if (reportId) {
+					const whereClause = mobile
+						? "r.id = ? AND p.mobile = ?"
+						: "r.id = ?";
+					const bindings = mobile ? [reportId, mobile] : [reportId];
+
 					const report = await env.DB.prepare(
-						`SELECT r.*, p.name as patient_name, p.mobile, a.risk_level, a.observations, a.biomarkers, pres.diagnosis, pres.notes, pres.medications
+						`SELECT r.*, p.name as patient_name, p.mobile,
+						        a.risk_level, a.observations, a.biomarkers, a.confidence_score,
+						        pres.diagnosis, pres.notes, pres.medications, pres.doctor_signature
 						 FROM ecg_reports r
 						 JOIN patients p ON r.patient_id = p.id
 						 LEFT JOIN ai_analysis a ON r.id = a.report_id
 						 LEFT JOIN prescriptions pres ON r.id = pres.report_id
-						 WHERE r.id = ? AND p.mobile = ? AND r.is_approved = 1`
-					).bind(reportId, mobile).first();
+						 WHERE ${whereClause}`
+					).bind(...bindings).first();
 
-					if (!report) return Response.json({ error: "Report not found or not yet approved" }, { status: 404, headers: corsHeaders });
+					if (!report) return Response.json({ error: "Report not found." }, { status: 404, headers: corsHeaders });
 					return Response.json({ success: true, report }, { headers: corsHeaders });
 				}
 
-				// Case 2: Search by Mobile only (List ALL reports, approved or pending)
+				// Case 2: Mobile only → list ALL reports for that patient
 				const { results: reports } = await env.DB.prepare(
 					`SELECT r.id, r.created_at, r.status, r.is_approved, p.name as patient_name
 					 FROM ecg_reports r
@@ -143,7 +152,6 @@ export default {
 				if (reports.length === 0) {
 					return Response.json({ error: "No reports found for this mobile number." }, { status: 404, headers: corsHeaders });
 				}
-
 				return Response.json({ success: true, reports }, { headers: corsHeaders });
 			}
 

@@ -23,6 +23,7 @@ const PatientPortal = () => {
 
   const handleSearch = async (e, isAuto = false) => {
     if (e) e.preventDefault();
+    if (!mobile && !reportId) { setError('Please enter a Report ID or Mobile Number.'); return; }
     setLoading(true);
     setError('');
     setReport(null);
@@ -36,7 +37,7 @@ const PatientPortal = () => {
         setReportsList(data.reports);
       }
     } catch (err) {
-      setError(err.message || 'Report not found or not yet approved.');
+      setError(err.message || 'No records found.');
     } finally {
       setLoading(false);
     }
@@ -44,8 +45,20 @@ const PatientPortal = () => {
 
   const selectReport = (id) => {
     setReportId(id);
-    // Trigger search for specific report
-    setTimeout(() => handleSearch(), 100);
+    // Use mobile if available, otherwise search by ID alone
+    setTimeout(async () => {
+      setLoading(true);
+      setError('');
+      setReport(null);
+      try {
+        const data = await api.publicSearch(id, mobile);
+        if (data.report) setReport(data.report);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }, 50);
   };
 
   return (

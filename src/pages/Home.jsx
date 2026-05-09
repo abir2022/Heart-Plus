@@ -3,22 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Activity, Search, Calendar, Stethoscope, Microscope, 
   Heart, ShieldCheck, Clock, Phone, Mail, MapPin, 
-  ArrowRight, CheckCircle, ChevronRight, Zap
+  ArrowRight, CheckCircle, ChevronRight, Zap, Hash
 } from 'lucide-react';
 import './Home.css';
 
 const Home = () => {
+  const [searchTab, setSearchTab] = useState('reportId'); // 'reportId' | 'mobile'
   const [reportId, setReportId] = useState('');
-  const [mobile, setMobile] = useState('');
+  const [mobile, setMobile]     = useState('');
   const navigate = useNavigate();
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (!reportId && !mobile) {
-      alert("Please enter either a Report ID or your Mobile Number.");
-      return;
+    if (searchTab === 'reportId') {
+      if (!reportId.trim()) { alert('Please enter a Report ID.'); return; }
+      navigate(`/patient-portal?reportId=${reportId.trim()}`);
+    } else {
+      if (!mobile.trim()) { alert('Please enter your Mobile Number.'); return; }
+      navigate(`/patient-portal?mobile=${mobile.trim()}`);
     }
-    navigate(`/patient-portal?reportId=${reportId}&mobile=${mobile}`);
   };
 
   const doctors = [
@@ -67,36 +70,65 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Report Checker Section */}
+      {/* Report Checker Section — Tabbed */}
       <section id="report-checker" className="report-checker-section">
         <div className="checker-card animate-scale-in">
           <div className="checker-info">
             <h2>Instant Report Access</h2>
-            <p>Access your diagnostic results securely from anywhere. Our laboratory system ensures your data remains private and easily accessible.</p>
+            <p>Search your diagnostic results using your <strong>Report ID</strong> or your registered <strong>Mobile Number</strong>.</p>
           </div>
+
+          {/* Tabs */}
+          <div className="search-tabs">
+            <button
+              className={`search-tab ${searchTab === 'reportId' ? 'active' : ''}`}
+              onClick={() => setSearchTab('reportId')}
+            >
+              <Hash size={16} /> Search by Report ID
+            </button>
+            <button
+              className={`search-tab ${searchTab === 'mobile' ? 'active' : ''}`}
+              onClick={() => setSearchTab('mobile')}
+            >
+              <Phone size={16} /> Search by Mobile Number
+            </button>
+          </div>
+
           <form onSubmit={handleSearch} className="checker-form">
-            <div className="form-grid">
-              <div className="input-field">
-                <label>PATIENT ID / REPORT ID</label>
-                <input 
-                  type="text" 
-                  placeholder="e.g. report_abcd1234"
-                  value={reportId}
-                  onChange={(e) => setReportId(e.target.value)}
-                />
+            {searchTab === 'reportId' ? (
+              <div className="single-input-field">
+                <label>REPORT ID</label>
+                <div className="input-with-icon">
+                  <Hash size={20} />
+                  <input
+                    type="text"
+                    placeholder="e.g. report_abcd1234"
+                    value={reportId}
+                    onChange={(e) => setReportId(e.target.value)}
+                    autoFocus
+                  />
+                </div>
+                <p className="input-hint">Enter the unique Report ID from your doctor or lab slip.</p>
               </div>
-              <div className="input-field">
+            ) : (
+              <div className="single-input-field">
                 <label>MOBILE NUMBER</label>
-                <input 
-                  type="text" 
-                  placeholder="e.g. 017xxxxxxxx"
-                  value={mobile}
-                  onChange={(e) => setMobile(e.target.value)}
-                />
+                <div className="input-with-icon">
+                  <Phone size={20} />
+                  <input
+                    type="text"
+                    placeholder="e.g. 01700000000"
+                    value={mobile}
+                    onChange={(e) => setMobile(e.target.value)}
+                    autoFocus
+                  />
+                </div>
+                <p className="input-hint">Enter your registered mobile to see all your diagnostic reports.</p>
               </div>
-            </div>
+            )}
             <button type="submit" className="btn-primary search-btn">
-              <Search size={20} /> Retrieve Patient Report
+              <Search size={20} />
+              {searchTab === 'reportId' ? 'Find Report' : 'View All My Reports'}
             </button>
           </form>
         </div>
