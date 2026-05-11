@@ -29,7 +29,7 @@ export default {
 			// --- GET: Fetch Recent Reports ---
 			if (pathname === "/api/reports" && request.method === "GET") {
 				const { results } = await env.DB.prepare(
-					"SELECT r.*, p.name as patient_name FROM ecg_reports r JOIN patients p ON r.patient_id = p.id ORDER BY r.upload_time DESC LIMIT 10"
+					"SELECT r.*, p.name as patient_name FROM ecg_reports r JOIN patients p ON r.patient_id = p.id ORDER BY r.created_at DESC LIMIT 10"
 				).all();
 				return Response.json(results, { headers: corsHeaders });
 			}

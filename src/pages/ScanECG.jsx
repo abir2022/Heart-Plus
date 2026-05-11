@@ -157,11 +157,11 @@ const ScanECG = ({ user }) => {
               <tr key={index}>
                 <td className="patient-cell">
                   <div className="avatar flex-center">{(report.patient_name || 'P').charAt(0)}</div>
-                  <span className="font-600">{report.patient_name}</span>
+                  <span className="font-600">{report.patient_name || 'Unknown'}</span>
                 </td>
                 <td>{report.id}</td>
-                <td>{new Date(report.upload_time).toLocaleString()}</td>
-                <td>{report.analysis_type}</td>
+                <td>{new Date(report.created_at).toLocaleString()}</td>
+                <td>ECG Analysis</td>
                 <td>
                   <StatusBadge type={report.status} />
                 </td>
