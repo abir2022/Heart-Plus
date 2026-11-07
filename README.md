@@ -1,3 +1,5 @@
+![Heart+](assets/banner.svg)
+
 # Heart+ — ECG triage and prescription workflow
 
 A clinic workflow prototype: a lab assistant uploads an ECG, an AI model drafts a reading, a doctor corrects and approves it, and the patient sees only what the doctor signed off on.
