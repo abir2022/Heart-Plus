@@ -20,7 +20,7 @@ The human-in-the-loop shape is deliberate. The AI never publishes a result; it p
 ## The workflow
 
 1. **Lab assistant** signs in, looks up or registers a patient by mobile number, uploads an ECG trace.
-2. **The Worker** stores the file in R2, the row in D1, and asks Workers AI for a draft: risk level, short observations, biomarker notes, confidence.
+2. **The Worker** stores the file in R2, the row in D1, and attaches a draft reading — risk level, observations, biomarkers, confidence — for the doctor to review.
 3. **Doctor** opens the report, edits the AI's observations (the editable fields are the point), writes a diagnosis, notes and medications, signs, and approves.
 4. **Patient** looks up the report with a report ID or mobile number and sees the approved reading and prescription — or nothing, until it is approved.
 5. **Prescription** renders as a printable sheet for the clinic printer.
@@ -42,7 +42,7 @@ Schema lives in [`server/migrations/0000_initial_schema.sql`](server/migrations/
 ```
 React (Vite) ──fetch──> Cloudflare Worker ──┬──> D1   (patients, reports, prescriptions)
                                             ├──> R2   (ECG files)
-                                            └──> Workers AI (draft reading)
+                                            └──> ai_analysis (draft reading for the clinician)
 ```
 
 ## The AI part, precisely
@@ -101,7 +101,7 @@ An `R2` bucket (`ecg-scans`) and the `AI` binding are declared in [`server/wrang
 
 ## Stack
 
-React 19 · Vite · React Router · Recharts · Cloudflare Workers · D1 · R2 · Workers AI · TypeScript · Vitest
+React 19 · Vite · React Router · Recharts · Cloudflare Workers · D1 · R2  · TypeScript · Vitest
 
 ---
 
