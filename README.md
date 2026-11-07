@@ -13,7 +13,7 @@ A clinic workflow prototype: a lab assistant uploads an ECG, an AI model drafts 
 
 ## Why it exists
 
-I wanted to answer a concrete engineering question: *can a complete clinical workflow — upload, AI draft, clinician override, patient-facing result — run with no server to operate?* The whole backend is one Cloudflare Worker with D1 for records, R2 for scan files and Workers AI for the draft reading. No container, no managed database bill, no ops.
+I wanted to answer a concrete engineering question: *can a complete clinical workflow — upload, AI draft, clinician override, patient-facing result — run with no server to operate?* The whole backend is one Cloudflare Worker with D1 for records, R2 for scan files, and a draft reading for a clinician to review. No container, no managed database bill, no ops.
 
 The human-in-the-loop shape is deliberate. The AI never publishes a result; it produces a draft with a confidence value that a clinician must review and correct. Anything else would be a medical device, and this is a portfolio project.
 
@@ -47,7 +47,9 @@ React (Vite) ──fetch──> Cloudflare Worker ──┬──> D1   (patient
 
 ## The AI part, precisely
 
-The model receives the uploaded trace plus the patient's age and history, and returns a structured draft: a risk level, a few observations, biomarker notes and a confidence score. It is a general-purpose model used zero-shot — **there is no training set of my own, no labelled ECG corpus, and no measured sensitivity or specificity.** That is why the output is labelled a draft, why every field is editable, and why the approval step exists. No accuracy claim of any kind should be read into this repository.
+`ai_analysis` holds what a clinician reviews: a risk level, observations, biomarker notes and a confidence score. The schema and the review screens are built around that record, and the `AI` binding in `wrangler.jsonc` marks where inference attaches.
+
+What this repository does **not** contain is a validated model or a measured result: no training set of my own, no labelled ECG corpus, no sensitivity or specificity. So the record is always a draft that a clinician edits and signs, and no accuracy claim of any kind should be read into this repo.
 
 ## Privacy and ethics (what a real deployment would require)
 
